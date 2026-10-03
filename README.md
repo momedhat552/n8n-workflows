@@ -31,4 +31,20 @@ Every morning, this workflow fetches new remote programming jobs from the We Wor
 **Setup**
 
 1. Import `The Daily Digest.json` in n8n (menu, then Import from file).
-2. Add your own Gemini and Gmail
+2. Add your own Gemini and Gmail credentials.
+3. Set the schedule time and the recipient address.
+
+Job listings come from We Work Remotely's public RSS feed. Each email links back to the original posting.
+
+## 3. Error Alert
+
+A small workflow that emails me when a scheduled workflow fails. It uses n8n's Error Trigger node and is linked to the jobs digest in its settings.
+
+![Error alert canvas](<Error Alert.png>)
+
+**Setup:** import `Error Alert.json`, add a Gmail credential, publish it, then select it as the error workflow in your other workflow's settings.
+
+## Notes
+
+- No API keys or passwords are stored in this repository. You need your own credentials.
+- Model names change often. If the Gemini node reports that a model isn't found, pick a current one from the node's dropdown.
