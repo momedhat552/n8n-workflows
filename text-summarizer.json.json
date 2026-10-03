@@ -1,0 +1,90 @@
+{
+  "name": "Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Summarizer",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Text to summarize"
+            },
+            {
+              "fieldLabel": "Number of sentences",
+              "fieldType": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "00cc684f-902f-482b-829d-b142a5987095",
+      "name": "On form submission",
+      "webhookId": "28c9cb00-b760-46b4-be67-3d03f35e28db"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-lite-latest",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this in {{ $json[\"Number of sentences\"] }} sentences:\n\n{{ $json[\"Text to summarize\"] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cb0da09e-cfb9-4bd5-bedd-b8c3fe43e7de",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JNtiQl6pbzBgyxhY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6cca39ce-3dbe-46d3-be72-9f6a18896b62",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "019feafc96fc4379d12b608403f79539b048d5fb21d39e0935136a99a454e233"
+  },
+  "nodeGroups": [],
+  "id": "GtfPTEo1jxv6OV7H",
+  "tags": []
+}
