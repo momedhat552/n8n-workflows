@@ -20,7 +20,31 @@ A form where you paste text and get back a short summary written by an AI model.
 2. Open the Gemini node and add your own Gemini API credential (free keys are available from Google AI Studio).
 3. Click Execute workflow, fill in the form, and check the output.
 
-**Notes**
+## 2. Remote Jobs Digest
 
-- No API keys are stored in this repository. You need your own credentials.
-- Model names change often. If the node reports that a model isn't found, pick a current one from the node's dropdown.
+Every morning, this workflow fetches new remote programming jobs from the We Work Remotely RSS feed, summarizes each posting with the Gemini API, and emails me one digest with a link to apply for each job.
+
+![Jobs digest canvas](jobs-digest.png)
+
+**Nodes:** Schedule Trigger, RSS Read, Limit, Google Gemini, Edit Fields, Aggregate, Gmail
+
+**Setup**
+
+1. Import `jobs-digest.json` in n8n (menu, then Import from file).
+2. Add your own Gemini and Gmail credentials.
+3. Set the schedule time and the recipient address.
+
+Job listings come from We Work Remotely's public RSS feed. Each email links back to the original posting.
+
+## 3. Error Alert
+
+A small workflow that emails me when a scheduled workflow fails. It uses n8n's Error Trigger node and is linked to the jobs digest in its settings.
+
+![Error alert canvas](error-alert.png)
+
+**Setup:** import `error-alert.json`, add a Gmail credential, publish it, then select it as the error workflow in your other workflow's settings.
+
+## Notes
+
+- No API keys or passwords are stored in this repository. You need your own credentials.
+- Model names change often. If the Gemini node reports that a model isn't found, pick a current one from the node's dropdown.

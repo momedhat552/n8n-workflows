@@ -1,0 +1,233 @@
+{
+  "name": "The Daily Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "931e9ea3-f333-4286-aa64-1576dc67b5e4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3a79c126-cde7-41fe-b45c-b5d32e244c61",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "7f32a0a0-220e-4ec0-bc20-0920b2e9ff54",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-lite-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-flash-lite-latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this job posting in 2 lines: the role, the company, and the main requirements.\n\nTitle: {{ $json.title }}\nDescription: {{ $json.contentSnippet }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        16
+      ],
+      "id": "aee40449-4035-4545-8575-3e99bc279e0c",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JNtiQl6pbzBgyxhY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Summary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        368,
+        240
+      ],
+      "id": "ad5a65ab-6260-424a-8480-6edabae10739",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "{Email Address}",
+        "subject": "Daily remote jobs",
+        "message": "={{ $json.Summary.join(\"<br><br>\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        224
+      ],
+      "id": "d04ba4d2-9549-409e-a445-d5636294e283",
+      "name": "Send a message",
+      "webhookId": "a2430dfd-90c8-4b17-92f2-a27eaed0c8b1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pytOrAfMKVB7CqBC",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "caa93e21-3114-438f-b03c-4bac52431eb8",
+              "name": "Summary",
+              "value": "={{ $json.content.parts[0].text }}<br>Apply: {{ $('Limit').item.json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        96,
+        240
+      ],
+      "id": "10ff13d0-4d3c-462a-ba96-1153a0093a35",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8d7f76e6-9c41-409a-a0e7-6ac6a1e18125",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "019feafc96fc4379d12b608403f79539b048d5fb21d39e0935136a99a454e233"
+  },
+  "nodeGroups": [],
+  "id": "k1FzWT3kUp8GgpvR",
+  "tags": []
+}
